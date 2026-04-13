@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apresentação - Dashboard Labs</title>
+    <!-- Google Fonts: Outfit (modern/premium) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #05070a;
+            --card-glass: rgba(25, 30, 40, 0.6);
+            --accent: #0084ff;
+            --accent-glow: rgba(0, 132, 255, 0.4);
+            --text-main: #ffffff;
+            --text-dim: #a1a1aa;
+            --border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* DYNAMIC BACKGROUND */
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(0, 132, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 132, 255, 0.1) 0%, transparent 50%);
+            filter: blur(80px);
+        }
+
+        /* SLIDE CONTAINER */
+        .presentation {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 10%;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .slide.prev {
+            opacity: 0;
+            transform: translateX(-50px) scale(0.95);
+        }
+
+        /* TYPOGRAPHY */
+        .badge {
+            display: inline-block;
+            padding: 0.6rem 1.4rem;
+            background: rgba(0, 132, 255, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(0, 132, 255, 0.3);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff 40%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        h2 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            color: #fff;
+        }
+
+        p.description {
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            max-width: 900px;
+            line-height: 1.6;
+            margin-bottom: 3rem;
+        }
+
+        /* GLASS CARDS */
+        .glass-container {
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            background: rgba(0, 132, 255, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: var(--text-dim);
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        /* LIVE DEMO BUTTON */
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            padding: 1.2rem 2.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px var(--accent-glow);
+        }
+
+        /* CONTROLS */
+        .nav-ui {
+            position: fixed;
+            bottom: 3rem;
+            right: 3rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: var(--card-glass);
+            border: 1px solid var(--border);
+            color: #fff;
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+        }
+
+        /* PROGRESS */
+        .progress-bar-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 1001;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* ANIMATION UTILS */
+        .reveal {
+            animation: revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes revealUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="mesh-bg"></div>
+    <div class="progress-bar-container">
+        <div class="progress-fill" id="progressBar"></div>
+    </div>
+
+    <button class="control-btn fullscreen-btn" onclick="toggleFullScreen()" title="Tela Cheia (F)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+        </svg>
+    </button>
+
+    <div class="presentation">
+        <!-- SLIDE 1: CAPA -->
+        <section class="slide active">
+            <div class="badge">Projeto: Dashboard Eletrônics Lab.</div>
+            <h1>Smart Lab Monitoring<br><span style="color:var(--accent)">Real-Time Visibility</span></h1>
+            <p class="description">Transformando dados em visualização estratégica através da centralização das nossas
+                planilhas.</p>
+            <div style="margin-top: 2rem;">
+                <span style="color: var(--text-dim); font-size: 0.9rem;">Pressione ➔ ou Espaço para começar</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: DESAFIOS -->
+        <section class="slide">
+            <div class="badge">O Desafio</div>
+            <h2>Uma visualização rapida e agrupada das nossas informações</h2>
+            <div class="glass-container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">📊</span>
+                        <h3>Dados Estáticos</h3>
+                        <p>Planilhas isoladas dificultavam a visão macro e atrasavam decisões.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔄</span>
+                        <h3>Falta de Agilidade</h3>
+                        <p>O tempo entre a coleta do dado e a visualização era proibitivo para o monitoramento real.</p>
+                    </div>
+                    <div class="feature-card" style="border-bottom: 4px solid var(--accent);">
+                        <span class="feature-icon">🚀</span>
+                        <h3>A Solução</h3>
+                        <p>Um ecossistema automatizado que respira junto com o laboratório.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: ARQUITETURA -->
+        <section class="slide">
+            <div class="badge">Arquitetura Técnica</div>
+            <h2>Fluxo de Dados Inteligente</h2>
+            <div class="glass-container" style="display: flex; flex-direction: column; align-items: center; gap: 3rem;">
+                <p style="font-size: 1.25rem; color: var(--text-dim); max-width: 850px; line-height: 1.8;">Toda a
+                    infraestrutura está sendo projetada para revolucionar a visualização estratégica de dados,
+                    sustentada pela segurança e <b>blindagem da autenticação Google</b>.</p>
+                <div style="display: flex; align-items: center; gap: 2rem; width: 100%; justify-content: center;">
+                    <div class="feature-card" style="width: 250px; text-align: center;">
+                        <span style="font-size: 3rem;">📋</span>
+                        <h4 style="margin-top:1rem">Google Sheets</h4>
+                        <p>Interface de Entrada</p>
+                    </div>
+                    <div style="font-size: 2rem; color: var(--accent);">➔</div>
+                    <div class="feature-card" style="width: 250px; text-align: center; border-color: var(--accent);">
+                        <span style="font-size: 3rem;">⚡</span>
+                        <h4 style="margin-top:1rem">Apps Script API</h4>
+                        <p>Coração do Sistema</p>
+                    </div>
+                    <div style="font-size: 2rem; color: var(--accent);">➔</div>
+                    <div class="feature-card" style="width: 250px; text-align: center;">
+                        <span style="font-size: 3rem;">💻</span>
+                        <h4 style="margin-top:1rem">Custom Dashboard</h4>
+                        <p>Visualização Final</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: DASHBOARD PREVIEW (FINAL) -->
+        <section class="slide">
+            <div class="badge">Amostra do Dashboard</div>
+            <h2>Status do Projeto</h2>
+            <p class="description">O sistema está em fase de construção. <br>Confira apenas um preview com os dados reais do nosso laboratório.</p>
+            <div class="glass-container" style="max-width: 600px;">
+                <p style="margin-bottom: 2rem; color: var(--text-dim);">Acesse a visualização interativa:</p>
+                <a href="http://is.gd/nidec" class="btn-primary" target="_blank">
+                    <span>Acessar Preview em Tempo Real</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+
+    </div>
+
+    <div class="nav-ui">
+        <button class="control-btn" onclick="prevSlide()" title="Anterior (←)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <button class="control-btn" onclick="nextSlide()" title="Próximo (➔)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                if (index === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else if (index < currentSlideIndex) {
+                    slide.classList.add('prev');
+                }
+            });
+
+            const progress = ((currentSlideIndex + 1) / slides.length) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                updateSlides();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlides();
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') nextSlide();
+            if (e.key === 'ArrowLeft' || e.key === 'Backspace') prevSlide();
+            if (e.key === 'f' || e.key === 'F') toggleFullScreen();
+        });
+
+        // Touch
+        let touchstartX = 0;
+        let touchendX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleGesture();
+        });
+
+        function handleGesture() {
+            if (touchendX < touchstartX - 50) nextSlide();
+            if (touchendX > touchstartX + 50) prevSlide();
+        }
+
+        updateSlides();
+    </script>
+</body>
+
+</html>
